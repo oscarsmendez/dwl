@@ -10,7 +10,7 @@ static const unsigned int borderpx         = 1;  /* border pixel of windows */
 static const float rootcolor[]             = COLOR(0x222222ff);
 static const float bordercolor[]           = COLOR(0x444444ff);
 static const float focuscolor[]            = COLOR(0x005577ff);
-static const float urgentcolor[]           = COLOR(0xff0000ff);
+static const float urgentcolor[]           = COLOR(0x00ad89ff);
 /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
 static const float fullscreen_bg[]         = {0.1f, 0.1f, 0.1f, 0.0f}; /* You can also use glsl colors */
 
@@ -20,8 +20,8 @@ static const float opacity_active = 1.0;
 
 static const int shadow = 1; /* flag to enable shadow */
 static const int shadow_only_floating = 0; /* only apply shadow to floating windows */
-static const struct wlr_render_color shadow_color = COLOR(0x0000FFff);
-static const struct wlr_render_color shadow_color_focus = COLOR(0xFF0000ff);
+static const struct wlr_render_color shadow_color = COLOR(0x00ad89ff);
+static const struct wlr_render_color shadow_color_focus = COLOR(0xFFa100ff);
 static const int shadow_blur_sigma = 20;
 static const int shadow_blur_sigma_focus = 40;
 static const char *const shadow_ignore_list[] = { "xdg-desktop-portal-gtk", NULL }; /* list of app-id to ignore */
