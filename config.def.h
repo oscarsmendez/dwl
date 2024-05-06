@@ -26,7 +26,7 @@ static const int shadow_blur_sigma = 20;
 static const int shadow_blur_sigma_focus = 40;
 static const char *const shadow_ignore_list[] = { "xdg-desktop-portal-gtk", NULL }; /* list of app-id to ignore */
 
-static const int corner_radius = 0; /* 0 disables corner_radius */
+static const int corner_radius = 5; /* 0 disables corner_radius */
 
 static const int blur = 1; /* flag to enable blur */
 static const int blur_optimized = 1;
