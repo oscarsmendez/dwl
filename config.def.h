@@ -62,8 +62,7 @@ static const Rule rules[] = {
 	/* examples: 
 	{ "Gimp_EXAMPLE",     NULL,       0,            1,           -1 }, Start on currently visible tags floating, not tiled
 	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,           -1 }, Start on ONLY tag "9" */
-	{ "kvantum-manager",  NULL,	  0,		1,	     -1 },
-	{ "lxqt-config",      NULL,	  0,		1,	     -1 },
+	{ "zed-editor",      NULL,	  0,		1,	     -1 },
 };
 
 /* layout(s) */
