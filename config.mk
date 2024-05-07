@@ -3,13 +3,16 @@ VERSION  = `git describe --tags --dirty 2>/dev/null || echo $(_VERSION)`
 
 PKG_CONFIG = pkg-config
 
-# paths
+# fixed config path
+PKG_CONFIG_PATH = /usr/local/lib/pkgconfig
+# other paths
 PREFIX = /usr/local
 MANDIR = $(PREFIX)/share/man
 DATADIR = $(PREFIX)/share
 
-XWAYLAND =
-XLIBS =
+# Uncomment to remove XWayland support
+#XWAYLAND =
+#XLIBS =
 # Uncomment to build XWayland support
-#XWAYLAND = -DXWAYLAND
-#XLIBS = xcb xcb-icccm
+XWAYLAND = -DXWAYLAND
+XLIBS = xcb xcb-icccm
