@@ -13,7 +13,7 @@ static const unsigned int borderpx         = 1;  /* border pixel of windows */
 static const float rootcolor[]             = COLOR(0x222222ff);
 static const float bordercolor[]           = COLOR(0x444444ff);
 static const float focuscolor[]            = COLOR(0x005577ff);
-static const float urgentcolor[]           = COLOR(0xff0000ff);
+static const float urgentcolor[]           = COLOR(0x00ad89ff);
 /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
 static const float fullscreen_bg[]         = {0.1f, 0.1f, 0.1f, 0.0f}; /* You can also use glsl colors */
 
@@ -23,13 +23,13 @@ static const float opacity_active = 1.0;
 
 static const int shadow = 1; /* flag to enable shadow */
 static const int shadow_only_floating = 0; /* only apply shadow to floating windows */
-static const struct wlr_render_color shadow_color = COLOR(0x0000FFff);
-static const struct wlr_render_color shadow_color_focus = COLOR(0xFF0000ff);
+static const struct wlr_render_color shadow_color = COLOR(0x00ad89ff);
+static const struct wlr_render_color shadow_color_focus = COLOR(0xFFa100ff);
 static const int shadow_blur_sigma = 20;
 static const int shadow_blur_sigma_focus = 40;
 static const char *const shadow_ignore_list[] = { "xdg-desktop-portal-gtk", NULL }; /* list of app-id to ignore */
 
-static const int corner_radius = 0; /* 0 disables corner_radius */
+static const int corner_radius = 5; /* 0 disables corner_radius */
 
 static const int blur = 1; /* flag to enable blur */
 static const int blur_optimized = 1;
@@ -51,19 +51,21 @@ static int log_level = WLR_ERROR;
 
 /* Autostart */
 static const char *const autostart[] = {
-        "wbg", "/path/to/your/image", NULL,
+        "settimed", "Big\ Sur\ Beach\ 2", NULL,
+	"dunst", NULL,
+	"conky", NULL,
+	"darkman", NULL,
+	"logid", NULL,
         NULL /* terminate */
 };
 
 
 static const Rule rules[] = {
-	/* app_id             title       tags mask     isfloating  isterm  noswallow  monitor */
- 	/* examples: 
-	{ "Gimp_EXAMPLE",     NULL,       0,            1,          0,      1,         -1 },  Start on currently visible tags floating, not tiled 
-	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,          0,      1,         -1 },  Start on ONLY tag "9"
-	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot */
-
-	{ "alacritty",        NULL,	  0,		0,	    1,	    1,	       -1 },
+	/* app_id             title       tags mask     isfloating   monitor */
+	/* examples: 
+	{ "Gimp_EXAMPLE",     NULL,       0,            1,           -1 }, Start on currently visible tags floating, not tiled
+	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,           -1 }, Start on ONLY tag "9" */
+	{ "zed-editor",      NULL,	  0,		1,	     -1 },
 };
 
 /* layout(s) */
@@ -141,7 +143,7 @@ LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 finger tap maps to left/middle/right
 static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TAP_MAP_LRM;
 
 /* If you want to use the windows key for MODKEY, use WLR_MODIFIER_LOGO */
-#define MODKEY WLR_MODIFIER_ALT
+#define MODKEY WLR_MODIFIER_LOGO
 
 #define TAGKEYS(KEY,SKEY,TAG) \
 	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
@@ -153,13 +155,13 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[] = { "foot", NULL };
-static const char *menucmd[] = { "wmenu-run", NULL };
+static const char *termcmd[] = { "alacritty", NULL };
+static const char *menucmd[] = { "yofi", NULL };
 
 static const Key keys[] = {
 	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
 	/* modifier                  key                 function        argument */
-	{ MODKEY,                    XKB_KEY_p,          spawn,          {.v = menucmd} },
+	{ MODKEY,                    XKB_KEY_t,          spawn,          {.v = menucmd} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          {.v = termcmd} },
 	{ MODKEY,                    XKB_KEY_j,          focusstack,     {.i = +1} },
 	{ MODKEY,                    XKB_KEY_k,          focusstack,     {.i = -1} },
@@ -173,7 +175,7 @@ static const Key keys[] = {
 	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
 	{ MODKEY,                    XKB_KEY_g,          togglegaps,     {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_C,          killclient,     {0} },
-	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                    XKB_KEY_p,          setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                    XKB_KEY_space,      setlayout,      {0} },
