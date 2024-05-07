@@ -68,6 +68,7 @@ static const Rule rules[] = {
 	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot */
 
 	{ "alacritty",        NULL,	  0,		0,	    1,	    1,	       -1 },
+	{ "conky",	      NULL,	  0,		1,	    0,	    1,	       -1 },
 };
 
 /* layout(s) */
