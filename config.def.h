@@ -67,8 +67,8 @@ static const Rule rules[] = {
 	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,          0,      1,         -1 },  Start on ONLY tag "9"
 	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot */
 
+	{ "conky",	      NULL,	  0,		1,	    0,	    0,	       -1 },
 	{ "alacritty",        NULL,	  0,		0,	    1,	    1,	       -1 },
-	{ "conky",	      NULL,	  0,		1,	    0,	    1,	       -1 },
 };
 
 /* layout(s) */
