@@ -51,7 +51,7 @@ static int log_level = WLR_ERROR;
 
 /* Autostart */
 static const char *const autostart[] = {
-        "settimed", "Big\ Sur\ Beach\ 2", NULL,
+        "settimed", "Big Sur Beach 2", NULL,
 	"dunst", NULL,
 	"conky", NULL,
 	"darkman", NULL,
