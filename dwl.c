@@ -16,7 +16,10 @@
 #include <unistd.h>
 #include <wayland-server-core.h>
 #include <wlr/backend.h>
+#include <wlr/backend/headless.h>
 #include <wlr/backend/libinput.h>
+#include <wlr/backend/multi.h>
+#include <wlr/backend/wayland.h>
 #include <wlr/render/allocator.h>
 #include <wlr/render/wlr_renderer.h>
 #include <wlr/types/wlr_compositor.h>
@@ -65,6 +68,9 @@
 #include <wlr/xwayland.h>
 #include <xcb/xcb.h>
 #include <xcb/xcb_icccm.h>
+#endif
+#if WLR_HAS_X11_BACKEND
+#include <wlr/backend/x11.h>
 #endif
 
 #include "util.h"
@@ -364,6 +370,8 @@ static Monitor *xytomon(double x, double y);
 static void xytonode(double x, double y, struct wlr_surface **psurface,
 		Client **pc, LayerSurface **pl, double *nx, double *ny);
 static void zoom(const Arg *arg);
+static void _create_output(struct wlr_backend *backend, void *data);
+static void create_output(const Arg *arg);
 static pid_t getparentprocess(pid_t p);
 static int isdescprocess(pid_t p, pid_t c);
 static Client *termforwin(Client *w);
@@ -379,6 +387,7 @@ static int locked;
 static void *exclusive_focus;
 static struct wl_display *dpy;
 static struct wlr_backend *backend;
+static struct wlr_backend *headless_backend;
 static struct wlr_scene *scene;
 static struct wlr_scene_tree *layers[NUM_LAYERS];
 static struct wlr_scene_tree *drag_icon;
@@ -2572,7 +2581,9 @@ setup(void)
 
 	int i, sig[] = {SIGCHLD, SIGINT, SIGTERM, SIGPIPE};
 	struct sigaction sa = {.sa_flags = SA_RESTART, .sa_handler = handlesig};
+	char cursorsize_str[3];
 	sigemptyset(&sa.sa_mask);
+	sprintf(cursorsize_str, "%d", cursorsize);
 
 	for (i = 0; i < (int)LENGTH(sig); i++)
 		sigaction(sig[i], &sa, NULL);
@@ -2714,8 +2725,8 @@ setup(void)
 	 * Xcursor themes to source cursor images from and makes sure that cursor
 	 * images are available at all scale factors on the screen (necessary for
 	 * HiDPI support). Scaled cursors will be loaded with each output. */
-	cursor_mgr = wlr_xcursor_manager_create(NULL, 24);
-	setenv("XCURSOR_SIZE", "24", 1);
+	cursor_mgr = wlr_xcursor_manager_create(cursortheme, cursorsize);
+	setenv("XCURSOR_SIZE", cursorsize_str, 1);
 
 	/*
 	 * wlr_cursor *only* displays an image on screen. It does not move around
@@ -2735,6 +2746,17 @@ setup(void)
 
 	cursor_shape_mgr = wlr_cursor_shape_manager_v1_create(dpy, 1);
 	LISTEN_STATIC(&cursor_shape_mgr->events.request_set_shape, setcursorshape);
+
+	/**
+	 * Initialize headless backend
+	 */ 
+	headless_backend = wlr_headless_backend_create(dpy);
+	if (!headless_backend) {
+		die("Failed to create secondary headless backend");
+	} else {
+		wlr_multi_backend_add(backend, headless_backend);
+	}
+
 
 	/*
 	 * Configures a seat, which is a single "seat" at which a user sits and
@@ -3338,6 +3360,45 @@ iter_xdg_scene_buffers_shadow(struct wlr_scene_buffer *buffer, int sx, int sy, v
 		if (!wlr_subsurface_try_from_wlr_surface(xdg_surface->surface)) {
 			wlr_scene_buffer_set_shadow_data(buffer, c->shadow_data);
 		}
+	}
+}
+
+void 
+_create_output(struct wlr_backend *_backend, void *data) 
+{
+	bool *done = data;
+	if (*done) {
+		return;
+	}
+
+	if (wlr_backend_is_wl(_backend)) {
+		wlr_wl_output_create(_backend);
+		*done = true;
+	} else if (wlr_backend_is_headless(_backend)) {
+		wlr_headless_add_output(_backend, 1920, 1080);
+		*done = true;
+	}
+#if WLR_HAS_X11_BACKEND
+	else if (wlr_backend_is_x11(backend)) {
+		wlr_x11_output_create(backend);
+		*done = true;
+	}
+#endif
+}
+
+void
+create_output(const Arg *arg)
+{
+	bool done = false;
+
+	if (!wlr_backend_is_multi(backend)) {
+		die("Expected a multi backend");
+	}
+
+	wlr_multi_for_each_backend(backend, _create_output, &done);
+
+	if (!done) {
+		die("Can only create outputs for Wayland, X11 or headless backends");
 	}
 }
 
