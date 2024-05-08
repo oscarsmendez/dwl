@@ -9,7 +9,7 @@ static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will
 static const int smartgaps                 = 0;  /* 1 means no outer gap when there is only one window */
 static int gaps                            = 1;  /* 1 means gaps between windows are added */
 static const unsigned int gappx            = 10; /* gap pixel between windows */
-static const unsigned int borderpx         = 1;  /* border pixel of windows */
+static const unsigned int borderpx         = 0;  /* border pixel of windows */
 static const float rootcolor[]             = COLOR(0x222222ff);
 static const float bordercolor[]           = COLOR(0x444444ff);
 static const float focuscolor[]            = COLOR(0x005577ff);
@@ -31,7 +31,7 @@ static const int shadow_blur_sigma = 20;
 static const int shadow_blur_sigma_focus = 40;
 static const char *const shadow_ignore_list[] = { "xdg-desktop-portal-gtk", NULL }; /* list of app-id to ignore */
 
-static const int corner_radius = 0; /* 0 disables corner_radius */
+static const int corner_radius = 15; /* 0 disables corner_radius */
 
 static const int blur = 1; /* flag to enable blur */
 static const int blur_optimized = 1;
@@ -46,7 +46,7 @@ static const struct blur_data blur_data = {
 };
 
 /* tagging - TAGCOUNT must be no greater than 31 */
-#define TAGCOUNT (9)
+#define TAGCOUNT (3)
 
 /* logging */
 static int log_level = WLR_ERROR;
@@ -67,9 +67,9 @@ static const Rule rules[] = {
  	/* examples: 
 	{ "Gimp_EXAMPLE",     NULL,       0,            1,          0,      1,         -1 },  Start on currently visible tags floating, not tiled 
 	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,          0,      1,         -1 },  Start on ONLY tag "9"
-	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot */
+	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot */ 
 
-	{ "conky",	      NULL,	  0,		1,	    0,	    0,	       -1 },
+	{ "conky",	      NULL,	  0,		1,	    0,	    0,	       -1 }, 
 	{ "alacritty",        NULL,	  0,		0,	    1,	    1,	       -1 },
 };
 
