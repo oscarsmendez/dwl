@@ -88,7 +88,7 @@
 #define LISTEN_STATIC(E, H)     do { static struct wl_listener _l = {.notify = (H)}; wl_signal_add((E), &_l); } while (0)
 
 /* enums */
-enum { CurNormal, CurPressed, CurMove, CurResize }; /* cursor */
+enum { CurNormal, CurPressed, CurMove, CurResize, Curmfact }; /* cursor */
 enum { XDGShell, LayerShell, X11 }; /* client types */
 enum { LyrBg, LyrBottom, LyrTile, LyrFloat, LyrTop, LyrFS, LyrOverlay, LyrBlock, NUM_LAYERS }; /* scene layers */
 #ifdef XWAYLAND
@@ -2001,7 +2001,10 @@ motionnotify(uint32_t time, struct wlr_input_device *device, double dx, double d
 			}
 		}
 		return;
-	}
+	} else if (cursor_mode == Curmfact && time) {
+		selmon->mfact = (float) (cursor->x / selmon->m.width);
+		arrange(selmon);
+ 	}
 
 	/* Find the client under the pointer and send the event along. */
 	xytonode(cursor->x, cursor->y, &surface, &c, NULL, &sx, &sy);
@@ -2095,6 +2098,10 @@ moveresize(const Arg *arg)
 			}
 		}
 		break;
+	case Curmfact:
+		setfloating(grabc, 0);
+		selmon->mfact = (float) (cursor->x / selmon->m.width);
+		arrange(selmon);	
 	}
 }
 

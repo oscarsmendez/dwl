@@ -58,8 +58,7 @@ static const char *const autostart[] = {
 	"vala-panel", NULL,
 	"conky", NULL,
 	"logid", NULL,
-	"pdock", NULL,
-	"etc/NX/nxserver", "-startup", NULL,
+/*	"etc/NX/nxserver", "-startup", NULL, */
         NULL /* terminate */
 };
 
@@ -69,10 +68,10 @@ static const Rule rules[] = {
  	/* examples: 
 	{ "Gimp_EXAMPLE",     NULL,       0,            1,          0,      1,         -1 },  Start on currently visible tags floating, not tiled 
 	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,          0,      1,         -1 },  Start on ONLY tag "9"
-	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot */ 
+	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot  
 
 	{ "conky",	      NULL,	  0,		1,	    0,	    0,	       -1 },
-	{ "pdock",	      NULL,	  0,		1,	    0,	    0,	       -1 }, 
+	{ "cairo-dock",	      NULL,	  0,		1,	    0,	    0,	       -1 }, */
 	{ "alacritty",        NULL,	  0,		0,	    1,	    1,	       -1 },
 };
 
@@ -164,9 +163,9 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 
 /* commands */
 static const char *termcmd[] = { "alacritty", NULL };
-static const char *menucmd[] = { "yofi", NULL };
+static const char *menucmd[] = { "rofi", "-show", "drun", NULL };
 
-static const Key keys[] = {
+static const Key keys[] = { 
 	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
 	/* modifier                  key                 function        argument */
 	{ MODKEY,                    XKB_KEY_t,          spawn,          {.v = menucmd} },
@@ -219,6 +218,6 @@ static const Key keys[] = {
 
 static const Button buttons[] = {
 	{ MODKEY, BTN_LEFT,   moveresize,     {.ui = CurMove} },
-	{ MODKEY, BTN_MIDDLE, togglefloating, {0} },
+	{ MODKEY, BTN_MIDDLE, moveresize,     {.ui = Curmfact} },
 	{ MODKEY, BTN_RIGHT,  moveresize,     {.ui = CurResize} },
 };
