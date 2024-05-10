@@ -56,22 +56,20 @@ static const char *const autostart[] = {
         "settimed", "Big Sur Beach 2", NULL,
 	"dunst", NULL,
 	"vala-panel", NULL,
-	"conky", NULL,
+/*	"conky", NULL, */
 	"logid", NULL,
-/*	"etc/NX/nxserver", "-startup", NULL, */
         NULL /* terminate */
 };
 
 
 static const Rule rules[] = {
-	/* app_id             title       tags mask     isfloating  isterm  noswallow  monitor  layer */
+	/* app_id             title       tags mask     isfloating  isterm  noswallow  monitor */
  	/* examples: 
-	{ "Gimp_EXAMPLE",     NULL,       0,            1,          0,      1,         -1	-1 },  Start on currently visible tags floating, not tiled 
-	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,          0,      1,         -1	-1 },  Start on ONLY tag "9"
-	{ "foot",             NULL,       0,            0,          1,      1,         -1	-1 },  make foot swallow clients that are not foot */ 
+	{ "Gimp_EXAMPLE",     NULL,       0,            1,          0,      1,         -1 },  Start on currently visible tags floating, not tiled 
+	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,          0,      1,         -1 },  Start on ONLY tag "9"
+	{ "foot",             NULL,       0,            0,          1,      1,         -1 },  make foot swallow clients that are not foot */ 
 
-	{ "alacritty",        NULL,	  0,		0,	    1,	    1,	       -1	 },
-	{ "conky",	      NULL,	  0,		1,	    0,	    1,	       -1       }, 
+	{ "foot",	      NULL,	  0,		0,	    1,	    1,	       -1 },
 };
 
 /* layout(s) */
@@ -161,7 +159,7 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[] = { "alacritty", NULL };
+static const char *termcmd[] = { "foot", NULL };
 static const char *menucmd[] = { "rofi", "-show", "drun", NULL };
 
 static const Key keys[] = { 
