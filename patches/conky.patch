@@ -1,0 +1,121 @@
+From 5494a5d112b7a69088fbde9d27af285a5a1f6a05 Mon Sep 17 00:00:00 2001
+From: Palanix <palanixyt@gmail.com>
+Date: Thu, 9 May 2024 06:37:18 +0200
+Subject: [PATCH] Leave clients on a different layer
+
+---
+ config.def.h |  7 ++++---
+ dwl.c        | 22 ++++++++++++++++++++--
+ 2 files changed, 24 insertions(+), 5 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 8847e58..c949dea 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -21,10 +21,11 @@ static const float fullscreen_bg[]         = {0.1f, 0.1f, 0.1f, 1.0f}; /* You ca
+ static int log_level = WLR_ERROR;
+ 
+ static const Rule rules[] = {
+-	/* app_id             title       tags mask     isfloating   monitor */
++	/* app_id             title       tags mask     isfloating   monitor  layer */
+ 	/* examples: */
+-	{ "Gimp_EXAMPLE",     NULL,       0,            1,           -1 }, /* Start on currently visible tags floating, not tiled */
+-	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,           -1 }, /* Start on ONLY tag "9" */
++	{ "Gimp_EXAMPLE",     NULL,       0,            1,           -1,      -1 }, /* Start on currently visible tags floating, not tiled */
++	{ "firefox_EXAMPLE",  NULL,       1 << 8,       0,           -1,      -1 }, /* Start on ONLY tag "9" */
++	{ "LayerExample",     NULL,       0,            0,           -1,      LyrBottom }, /* See the layer enum in dwl.c, -1 means don't set */
+ };
+ 
+ /* layout(s) */
+diff --git a/dwl.c b/dwl.c
+index bf763df..f8b995e 100644
+--- a/dwl.c
++++ b/dwl.c
+@@ -139,6 +139,7 @@ typedef struct {
+ 	uint32_t tags;
+ 	int isfloating, isurgent, isfullscreen;
+ 	uint32_t resize; /* configure serial of a pending resize */
++	int layer;
+ } Client;
+ 
+ typedef struct {
+@@ -228,6 +229,7 @@ typedef struct {
+ 	uint32_t tags;
+ 	int isfloating;
+ 	int monitor;
++	int layer;
+ } Rule;
+ 
+ typedef struct {
+@@ -370,6 +372,7 @@ static struct wlr_xdg_activation_v1 *activation;
+ static struct wlr_xdg_decoration_manager_v1 *xdg_decoration_mgr;
+ static struct wl_list clients; /* tiling order */
+ static struct wl_list fstack;  /* focus order */
++static struct wl_list clyr;
+ static struct wlr_idle_notifier_v1 *idle_notifier;
+ static struct wlr_idle_inhibit_manager_v1 *idle_inhibit_mgr;
+ static struct wlr_layer_shell_v1 *layer_shell;
+@@ -463,6 +466,12 @@ applyrules(Client *c)
+ 				&& (!r->id || strstr(appid, r->id))) {
+ 			c->isfloating = r->isfloating;
+ 			newtags |= r->tags;
++			c->layer = r->layer;
++			if (c->layer > -1 && c->layer != LyrTile) {
++				wl_list_remove(&c->link);
++				wl_list_insert(&clyr, &c->link);
++			}
++			setfloating(c, 1);
+ 			i = 0;
+ 			wl_list_for_each(m, &mons, link) {
+ 				if (r->monitor == i++)
+@@ -488,6 +497,13 @@ arrange(Monitor *m)
+ 		}
+ 	}
+ 
++	wl_list_for_each(c, &clyr, link) {
++		if (c->mon == m) {
++			wlr_scene_node_set_enabled(&c->scene->node, VISIBLEON(c, m));
++			client_set_suspended(c, !VISIBLEON(c, m));
++		}
++	}
++
+ 	wlr_scene_node_set_enabled(&m->fullscreen_bg->node,
+ 			(c = focustop(m)) && c->isfullscreen);
+ 
+@@ -973,6 +989,7 @@ createnotify(struct wl_listener *listener, void *data)
+ 	c = xdg_surface->data = ecalloc(1, sizeof(*c));
+ 	c->surface.xdg = xdg_surface;
+ 	c->bw = borderpx;
++	c->layer = -1;
+ 
+ 	wlr_xdg_toplevel_set_wm_capabilities(xdg_surface->toplevel,
+ 			WLR_XDG_TOPLEVEL_WM_CAPABILITIES_FULLSCREEN);
+@@ -2153,7 +2170,7 @@ setfloating(Client *c, int floating)
+ 		return;
+ 	wlr_scene_node_reparent(&c->scene->node, layers[c->isfullscreen ||
+ 			(p && p->isfullscreen) ? LyrFS
+-			: c->isfloating ? LyrFloat : LyrTile]);
++			: c->isfloating ? ((c->layer > -1) ? c->layer : LyrFloat) : LyrTile]);
+ 	arrange(c->mon);
+ 	printstatus();
+ }
+@@ -2167,7 +2184,7 @@ setfullscreen(Client *c, int fullscreen)
+ 	c->bw = fullscreen ? 0 : borderpx;
+ 	client_set_fullscreen(c, fullscreen);
+ 	wlr_scene_node_reparent(&c->scene->node, layers[c->isfullscreen
+-			? LyrFS : c->isfloating ? LyrFloat : LyrTile]);
++			? LyrFS : c->isfloating ? ((c->layer > -1) ? c->layer : LyrFloat) : LyrTile]);
+ 
+ 	if (fullscreen) {
+ 		c->prev = c->geom;
+@@ -2370,6 +2387,7 @@ setup(void)
+ 	 */
+ 	wl_list_init(&clients);
+ 	wl_list_init(&fstack);
++	wl_list_init(&clyr);
+ 
+ 	xdg_shell = wlr_xdg_shell_create(dpy, 6);
+ 	LISTEN_STATIC(&xdg_shell->events.new_surface, createnotify);
+-- 
+2.45.0
+
